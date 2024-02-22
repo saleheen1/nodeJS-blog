@@ -10,12 +10,21 @@
 
     <ul class="article-ul">
 
-        <li>
-            <a href="">
-                <span>Title</span>
-                <span class="article-list__date">20/12/2222</span>
-            </a>
-        </li>
+        <% data.forEach(post=> { %>
+
+            <li>
+                <a href="/post/<%= post.id %>">
+                    <span>
+                        <%= post.title %>
+                    </span>
+                    <span class="article-list__date">
+                        <%= post.createdAt.toDateString() %>
+                    </span>
+                </a>
+            </li>
+
+            <% }) %>
+
 
     </ul>
 
