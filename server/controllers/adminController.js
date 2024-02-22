@@ -137,7 +137,23 @@ const loadAddPostPage = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+}
 
+/**
+create Post
+*/
+const createPost = async (req, res) => {
+    try {
+        const newPost = new Post({
+            title: req.body.title,
+            body: req.body.body
+        });
+
+        await Post.create(newPost);
+        res.redirect('/admin/dashboard');
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
@@ -145,5 +161,5 @@ const loadAddPostPage = async (req, res) => {
 module.exports = {
     goToLoginPage,
     register,
-    login, loadDashboard, authMiddleware
+    login, loadDashboard, authMiddleware, loadAddPostPage, createPost
 }
