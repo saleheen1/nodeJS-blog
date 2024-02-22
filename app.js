@@ -3,6 +3,9 @@ const express = require('express');
 const expressLayout = require('express-ejs-layouts');
 const app = express();
 const connectDb = require('./server/config/db')
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const PORT = 3000 || process.env.PORT;
 
 //connect db
@@ -17,8 +20,24 @@ app.use(express.static('public'));
 
 //Template engine
 app.use(expressLayout);
+//default page layout
 app.set('layout', './layouts/main');
 app.set('view engine', 'ejs');
+
+//For login
+app.use(cookieParser());
+// app.use(methodOverride('_method'));
+
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI
+    }),
+    //cookie: { maxAge: new Date ( Date.now() + (3600000) ) } 
+}));
+
 
 //routes
 app.use('/', require('./server/routes/blogRoutes'));
