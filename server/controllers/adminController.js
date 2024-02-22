@@ -36,8 +36,7 @@ const goToLoginPage = async (req, res) => {
             title: "Admin",
             description: "Simple Blog created with NodeJs, Express & MongoDb."
         }
-
-        res.render('admin/admin_login_page', { locals, layout: adminLayout });
+        res.render('admin/admin_login_page', { locals });
     } catch (error) {
         console.log(error);
     }
@@ -156,10 +155,72 @@ const createPost = async (req, res) => {
     }
 }
 
+/**
+go to edit Post page
+*/
+const loadEditPostPage = async (req, res) => {
+    try {
+        const locals = {
+            title: "Edit Post",
+            description: "Free NodeJs User Management System",
+        };
+        const data = await Post.findOne({ _id: req.params.id });
+        res.render('admin/edit_post', {
+            locals,
+            data,
+            layout: adminLayout
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+edit a Post
+*/
+const editPost = async (req, res) => {
+    try {
+        await Post.findByIdAndUpdate(req.params.id, {
+            title: req.body.title,
+            body: req.body.body,
+            updatedAt: Date.now()
+        });
+
+        res.redirect(`/admin/dashboard`);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+delete a Post
+*/
+const deletePost = async (req, res) => {
+    try {
+        await Post.deleteOne({ _id: req.params.id });
+        res.redirect('/admin/dashboard');
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+delete a Post
+*/
+const logOut = async (req, res) => {
+    res.clearCookie('token');
+    //res.json({ message: 'Logout successful.'});
+    res.redirect('/admin/login/page');
+
+}
+
 
 
 module.exports = {
     goToLoginPage,
     register,
-    login, loadDashboard, authMiddleware, loadAddPostPage, createPost
+    login, loadDashboard, authMiddleware,
+    loadAddPostPage, createPost, loadEditPostPage,
+    editPost, deletePost, logOut
 }

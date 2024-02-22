@@ -8,6 +8,10 @@ router.post('/register', adminController.register);
 router.get('/dashboard', adminController.authMiddleware, adminController.loadDashboard);
 router.get('/add-post/page', adminController.authMiddleware, adminController.loadAddPostPage);
 router.post('/create-post', adminController.authMiddleware, adminController.createPost);
+router.put('/edit-post/:id', adminController.authMiddleware, adminController.editPost);
+router.get('/edit-post/page/:id', adminController.authMiddleware, adminController.loadEditPostPage);
+router.delete('/delete-post/:id', adminController.authMiddleware, adminController.deletePost);
+router.get('/logout', adminController.authMiddleware, adminController.logOut);
 
 
 

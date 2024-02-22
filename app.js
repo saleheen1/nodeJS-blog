@@ -6,6 +6,8 @@ const connectDb = require('./server/config/db')
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const methodOverride = require('method-override');
+
 const PORT = 3000 || process.env.PORT;
 
 //connect db
@@ -26,7 +28,9 @@ app.set('view engine', 'ejs');
 
 //For login
 app.use(cookieParser());
-// app.use(methodOverride('_method'));
+
+//Need to ovveride method to use PUT and DELETE from form
+app.use(methodOverride('_method'));
 
 app.use(session({
     secret: 'keyboard cat',
