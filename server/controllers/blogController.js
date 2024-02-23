@@ -1,5 +1,7 @@
-
+const axios = require('axios');
 const Post = require('../models/Post');
+const { subscribe } = require('../routes/blogRoutes');
+
 
 // const fetchPosts = async (req, res) => {
 //     try {
@@ -103,6 +105,42 @@ const about = (req, res) => {
 }
 
 
+// mailchimp
+const saveEmailForNewsLetter = (req, res) => {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const email = req.body.email;
+
+    const data = {
+        members: [
+            {
+                email_address: email,
+                status: "subscribed",
+                merge_fields: {
+                    FNAME: firstName,
+                    LNAME: lastName
+                }
+            }
+        ]
+    }
+    // const jsonData = JSON.stringify(data);
+    const apiUrl = process.env.MAILCHIMP_URI;
+    const headers = {
+        Authorization: `auth ${process.env.MAILCHIMP_API_KEY}`
+    }
+    axios.post(apiUrl, data, {
+        headers: headers
+    })
+        .then(apiResponse => {
+            res.send("Newsletter signup success")
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
+
 module.exports = {
-    fetchPosts, about, fetchSinglePost, searchPost
+    fetchPosts, about, fetchSinglePost, searchPost,
+    saveEmailForNewsLetter
 }
