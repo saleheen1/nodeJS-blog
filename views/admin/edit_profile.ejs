@@ -1,0 +1,21 @@
+<a href="/admin/dashboard">&larr; Back</a>
+<div class="admin-title">
+    <h2>Edit profile</h2>
+
+    <form action="/admin/delete-user/<%= userData._id %>?_method=DELETE" method="POST">
+        <input type="submit" value="Delete my account" class="btn-delete btn">
+    </form>
+
+</div>
+
+<h3>
+    Name: <%= userData.username %>
+</h3>
+
+<form action="/admin/edit-profile/<%= userData._id %>?_method=PUT" method="POST">
+    <label for="body"><b>About me</b></label>
+    <textarea name="about" cols="50" rows="10"><%= userData.about %></textarea>
+
+    <input type="submit" value="Update" class="btn">
+
+</form>

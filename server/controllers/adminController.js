@@ -20,6 +20,7 @@ const authMiddleware = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, jwtSecret);
+
         req.userId = decoded.userId;
         next();
     } catch (error) {
@@ -76,13 +77,13 @@ Register
 */
 const register = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, about } = req.body;
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
 
         try {
-            const user = await User.create({ username, password: hashedPassword });
+            const user = await User.create({ username, about: about, password: hashedPassword });
             res.status(201).json({ message: 'User Created', user });
         } catch (error) {
             if (error.code === 11000) {
@@ -108,9 +109,14 @@ const loadDashboard = async (req, res) => {
         }
 
         const data = await Post.find();
+        const userid = req.userId;
+        const userData = await User.findById({ _id: userid });
+        console.log(`user data ${userData}`);
+
         res.render('admin/admin_dashboard', {
             locals,
             data,
+            userData,
             layout: adminLayout
         });
 
@@ -205,14 +211,71 @@ const deletePost = async (req, res) => {
     }
 }
 
+
 /**
-delete a Post
+Load edit profile
+*/
+const loadEditProfilePage = async (req, res) => {
+    try {
+        const locals = {
+            title: 'Edit profile',
+            description: 'Simple Blog created with NodeJs, Express & MongoDb.'
+        }
+        const userid = req.userId;
+        const userData = await User.findById({ _id: userid });
+
+        res.render('admin/edit_profile', {
+            locals,
+            userData,
+            layout: adminLayout
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ edit profile
+*/
+const editProfile = async (req, res) => {
+    try {
+        const userid = req.userId;
+        await User.findByIdAndUpdate(userid, { about: req.body.about });
+
+        res.redirect('/admin/dashboard');
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+Logout
 */
 const logOut = async (req, res) => {
     res.clearCookie('token');
     //res.json({ message: 'Logout successful.'});
     res.redirect('/admin/login/page');
 
+}
+
+/**
+ delete user
+*/
+const deleteUser = async (req, res) => {
+    try {
+        const userid = req.params.id;
+
+        console.log(`user id ${userid}`);
+        await User.findByIdAndDelete(userid);
+        res.clearCookie('token');
+
+        res.redirect('/admin/login/page');
+
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
@@ -222,5 +285,5 @@ module.exports = {
     register,
     login, loadDashboard, authMiddleware,
     loadAddPostPage, createPost, loadEditPostPage,
-    editPost, deletePost, logOut
+    editPost, deletePost, logOut, loadEditProfilePage, editProfile, deleteUser
 }
